@@ -123,6 +123,7 @@ Créer un portfolio Flutter professionnel et performant, entièrement personnali
 > 9. Responsive solide avec breakpoint principal à 768px (mobile < 768, desktop ≥ 768)
 > 10. Utiliser un layout web réutilisable avec NavBar + Footer non fixes et conteneur central (maxWidth 1200, padding 20/80)
 > 11. Éviter `withOpacity` (déprécié) et utiliser `.withValues(alpha: ...)`
+> 12. Préparer le déploiement Vercel (vercel.json, scripts d'installation/build, .vercelignore)
 
 ---
 
@@ -143,6 +144,10 @@ lib/
     image_generator.dart
 pubspec.yaml
 README_FLUTTER.md
+vercel.json
+vercel_install.sh
+vercel_build.sh
+.vercelignore
 ```
 
 ---
@@ -385,6 +390,83 @@ class _NavItem extends StatelessWidget {
 }
 ```
 
+### Déploiement Vercel (nouveau)
+
+vercel.json
+```json
+{
+  "version": 2,
+  "framework": null,
+  "installCommand": "bash ./vercel_install.sh",
+  "buildCommand": "bash ./vercel_build.sh",
+  "outputDirectory": "build/web",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+      ]
+    }
+  ]
+}
+```
+
+vercel_install.sh
+```bash
+set -euo pipefail
+
+if [ ! -d "$HOME/flutter" ]; then
+  echo "Cloning Flutter SDK (stable)..."
+  git clone https://github.com/flutter/flutter.git -b stable --depth 1 "$HOME/flutter"
+else
+  echo "Flutter SDK already present in $HOME/flutter"
+fi
+
+export PATH="$HOME/flutter/bin:$HOME/flutter/bin/cache/dart-sdk/bin:$PATH"
+
+flutter --version
+flutter config --no-analytics
+flutter doctor -v || true
+flutter config --enable-web || true
+
+flutter pub get
+```
+
+vercel_build.sh
+```bash
+set -euo pipefail
+
+export PATH="$HOME/flutter/bin:$HOME/flutter/bin/cache/dart-sdk/bin:$PATH"
+export FLUTTER_SUPPRESS_ANALYTICS=true
+export CI=true
+
+flutter --version || true
+flutter config --enable-web || true
+flutter pub get
+flutter build web --release
+
+ls -alh build/web || true
+```
+
+.vercelignore
+```gitignore
+android/
+ios/
+macos/
+windows/
+linux/
+test/
+build/
+*.iml
+.idea/
+.dart_tool/
+pubspec.lock
+README.md
+```
+
 ### ImageGenerator (usage)
 ```dart
 import '../utils/image_generator.dart';
@@ -405,6 +487,9 @@ Widget projectHeader(int index, String title) =>
 - [ ] Footer fait partie du flux de scroll (pas de position: fixed)
 - [ ] WebContainer maxWidth 1200, padding horizontal 20/80
 - [ ] Pas d'utilisation de `withOpacity` (utiliser `.withValues(alpha: ...)`)
+- [ ] Fichiers Vercel présents (vercel.json, vercel_install.sh, vercel_build.sh, .vercelignore)
+- [ ] `vercel.json` route toutes les URLs vers index.html (SPA)
+- [ ] Output Directory configuré sur `build/web`
 
 ---
 
@@ -420,6 +505,27 @@ Astuce de test rapide:
 flutter analyze
 flutter run -d chrome --web-port=8080
 ```
+
+---
+
+## 🚀 Déploiement Vercel
+
+Option CLI:
+```bash
+npm i -g vercel
+vercel login
+vercel --prod
+```
+
+Option Dashboard:
+- Framework: Other
+- Install Command: `bash ./vercel_install.sh`
+- Build Command: `bash ./vercel_build.sh`
+- Output Directory: `build/web`
+
+Notes:
+- Le rewrite SPA est inclus dans vercel.json (toutes les routes → index.html)
+- Les scripts utilisent Flutter stable et activent le support Web
 
 ---
 
