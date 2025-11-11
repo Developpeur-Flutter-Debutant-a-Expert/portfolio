@@ -14,6 +14,7 @@ export PATH="$HOME/flutter/bin:$HOME/flutter/bin/cache/dart-sdk/bin:$PATH"
 flutter --version
 flutter config --no-analytics
 flutter doctor -v || true
+flutter config --enable-web || true
 
 # Fetch Dart/Flutter deps for this project
 flutter pub get
