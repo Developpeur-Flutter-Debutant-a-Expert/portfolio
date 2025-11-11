@@ -1,0 +1,14 @@
+# Ignore native & build artifacts not needed for web deploy
+android/
+ios/
+macos/
+windows/
+linux/
+web/manifest.json
+build/
+test/
+*.iml
+.idea/
+.dart_tool/
+pubspec.lock
+README.md

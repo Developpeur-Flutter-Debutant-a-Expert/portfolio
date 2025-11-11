@@ -19,102 +19,102 @@ class SkillsScreen extends StatelessWidget {
         ),
         child: Column(
           children: [
-          Text(
-            'Compétences Techniques',
-            style: Theme.of(context).textTheme.displaySmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              fontSize: isMobile ? 28 : null,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Technologies et outils que je maîtrise',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: 40),
-          // Languages
-          _SkillSection(
-            title: 'Langages de Programmation',
-            icon: Icons.code,
-            color: AppColors.primary,
-            skills: UserInfoConfig.skills['languages'] as List<String>,
-          ),
-          const SizedBox(height: 24),
-
-          // Frameworks
-          _SkillSection(
-            title: 'Frameworks & Bibliothèques',
-            icon: Icons.layers,
-            color: AppColors.secondary,
-            skills: UserInfoConfig.skills['frameworks'] as List<String>,
-          ),
-          const SizedBox(height: 24),
-
-          // Tools
-          _SkillSection(
-            title: 'Outils & Technologies',
-            icon: Icons.build,
-            color: AppColors.accent,
-            skills: UserInfoConfig.skills['tools'] as List<String>,
-          ),
-          const SizedBox(height: 24),
-
-          // Concepts
-          _SkillSection(
-            title: 'Concepts & Architectures',
-            icon: Icons.architecture,
-            color: AppColors.accentOrange,
-            skills: UserInfoConfig.skills['concepts'] as List<String>,
-          ),
-          const SizedBox(height: 24),
-
-          // Skill Progress Card
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Progression',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 16),
-                  _SkillProgress(
-                    label: 'Flutter / Dart',
-                    progress: 0.9,
-                    color: AppColors.primary,
-                  ),
-                  const SizedBox(height: 12),
-                  _SkillProgress(
-                    label: 'Firebase',
-                    progress: 0.85,
-                    color: AppColors.accentOrange,
-                  ),
-                  const SizedBox(height: 12),
-                  _SkillProgress(
-                    label: 'State Management',
-                    progress: 0.8,
-                    color: AppColors.secondary,
-                  ),
-                  const SizedBox(height: 12),
-                  _SkillProgress(
-                    label: 'REST APIs',
-                    progress: 0.85,
-                    color: AppColors.accent,
-                  ),
-                  const SizedBox(height: 12),
-                  _SkillProgress(
-                    label: 'UI/UX Design',
-                    progress: 0.75,
-                    color: AppColors.accentPink,
-                  ),
-                ],
+            Text(
+              'Compétences Techniques',
+              style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                fontSize: isMobile ? 28 : null,
               ),
             ),
-          ),
-        ],
-      ),
+            const SizedBox(height: 8),
+            Text(
+              'Technologies et outils que je maîtrise',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 40),
+            // Languages
+            _SkillSection(
+              title: 'Langages de Programmation',
+              icon: Icons.code,
+              color: AppColors.primary,
+              skills: UserInfoConfig.skills['languages'] as List<String>,
+            ),
+            const SizedBox(height: 24),
+
+            // Frameworks
+            _SkillSection(
+              title: 'Frameworks & Bibliothèques',
+              icon: Icons.layers,
+              color: AppColors.secondary,
+              skills: UserInfoConfig.skills['frameworks'] as List<String>,
+            ),
+            const SizedBox(height: 24),
+
+            // Tools
+            _SkillSection(
+              title: 'Outils & Technologies',
+              icon: Icons.build,
+              color: AppColors.accent,
+              skills: UserInfoConfig.skills['tools'] as List<String>,
+            ),
+            const SizedBox(height: 24),
+
+            // Concepts
+            _SkillSection(
+              title: 'Concepts & Architectures',
+              icon: Icons.architecture,
+              color: AppColors.accentOrange,
+              skills: UserInfoConfig.skills['concepts'] as List<String>,
+            ),
+            const SizedBox(height: 24),
+
+            // Skill Progress Card
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Progression',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 16),
+                    _SkillProgress(
+                      label: 'Flutter / Dart',
+                      progress: 0.9,
+                      color: AppColors.primary,
+                    ),
+                    const SizedBox(height: 12),
+                    _SkillProgress(
+                      label: 'Firebase',
+                      progress: 0.85,
+                      color: AppColors.accentOrange,
+                    ),
+                    const SizedBox(height: 12),
+                    _SkillProgress(
+                      label: 'State Management',
+                      progress: 0.8,
+                      color: AppColors.secondary,
+                    ),
+                    const SizedBox(height: 12),
+                    _SkillProgress(
+                      label: 'REST APIs',
+                      progress: 0.85,
+                      color: AppColors.accent,
+                    ),
+                    const SizedBox(height: 12),
+                    _SkillProgress(
+                      label: 'UI/UX Design',
+                      progress: 0.75,
+                      color: AppColors.accentPink,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

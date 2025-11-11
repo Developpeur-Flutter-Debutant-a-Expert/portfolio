@@ -94,35 +94,39 @@ class _ProjectsScreenState extends State<ProjectsScreen> {
                   child: Center(child: Text('Aucun projet trouvé')),
                 )
               : isMobile
-                  ? Column(
-                      children: _filteredProjects.map((project) {
-                        final projectIndex = projects.indexOf(project) + 1;
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                          child: _ProjectCard(
-                            project: project,
-                            projectIndex: projectIndex,
-                          ),
-                        );
-                      }).toList(),
-                    )
-                  : Padding(
-                      padding: const EdgeInsets.all(80),
-                      child: Wrap(
-                        spacing: 24,
-                        runSpacing: 24,
-                        children: _filteredProjects.map((project) {
-                          final projectIndex = projects.indexOf(project) + 1;
-                          return SizedBox(
-                            width: (MediaQuery.of(context).size.width - 160 - 48) / 3,
-                            child: _ProjectCard(
-                              project: project,
-                              projectIndex: projectIndex,
-                            ),
-                          );
-                        }).toList(),
+              ? Column(
+                  children: _filteredProjects.map((project) {
+                    final projectIndex = projects.indexOf(project) + 1;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 8,
                       ),
-                    ),
+                      child: _ProjectCard(
+                        project: project,
+                        projectIndex: projectIndex,
+                      ),
+                    );
+                  }).toList(),
+                )
+              : Padding(
+                  padding: const EdgeInsets.all(80),
+                  child: Wrap(
+                    spacing: 24,
+                    runSpacing: 24,
+                    children: _filteredProjects.map((project) {
+                      final projectIndex = projects.indexOf(project) + 1;
+                      return SizedBox(
+                        width:
+                            (MediaQuery.of(context).size.width - 160 - 48) / 3,
+                        child: _ProjectCard(
+                          project: project,
+                          projectIndex: projectIndex,
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
           const SizedBox(height: 40),
         ],
       ),

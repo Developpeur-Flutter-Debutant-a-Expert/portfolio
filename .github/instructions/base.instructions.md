@@ -113,12 +113,16 @@ Créer un portfolio Flutter professionnel et performant, entièrement personnali
 ## 🧠 Mission de Copilot (critique)
 
 > 1. Lire USER_INFO et extraire toutes les données
-> 2. Compléter/adapter les fichiers Flutter listés ci-dessous
+> 2. Compléter/adapter les fichiers Flutter listés ci-dessous (web-first)
 > 3. Remplacer tous les placeholders par les vraies valeurs
 > 4. Utiliser `lib/utils/image_generator.dart` pour générer les images (profil + projets)
 > 5. Afficher clairement la progression des 10 projets (Débutant → Expert)
 > 6. Assurer `flutter analyze` sans erreurs et un run OK
 > 7. Matérial 3, null-safety, const optimisation
+> 8. Design orienté web (ne doit pas « sentir Flutter ») : barre de navigation horizontale, sections pleine largeur, grilles responsives
+> 9. Responsive solide avec breakpoint principal à 768px (mobile < 768, desktop ≥ 768)
+> 10. Utiliser un layout web réutilisable avec NavBar + Footer non fixes et conteneur central (maxWidth 1200, padding 20/80)
+> 11. Éviter `withOpacity` (déprécié) et utiliser `.withValues(alpha: ...)`
 
 ---
 
@@ -131,6 +135,7 @@ lib/
   data/projects_data.dart
   screens/
   widgets/
+    web_layout.dart
   utils/
     app_colors.dart
     app_theme.dart
@@ -163,6 +168,22 @@ class Project {
     required this.skills,
     required this.githubUrl,
   });
+
+  // Couleur (int) associée au niveau pour badges
+  int getLevelColor() {
+    switch (level) {
+      case 'Débutant':
+        return 0xFF22C55E; // green
+      case 'Intermédiaire':
+        return 0xFF3B82F6; // blue
+      case 'Avancé':
+        return 0xFFF59E0B; // amber
+      case 'Expert':
+        return 0xFFEF4444; // red
+      default:
+        return 0xFF64748B; // slate
+    }
+  }
 }
 ```
 
@@ -188,6 +209,23 @@ class UserInfoConfig {
       'description': "${USER_INFO.formations[0].description}",
     },
   ];
+
+  // Regroupez vos compétences ici pour l'écran Compétences
+  // Vous pouvez aussi exposer ces listes dans USER_INFO si vous préférez
+  static const skills = {
+    'languages': [
+      'Dart', 'JavaScript', 'TypeScript'
+    ],
+    'frameworks': [
+      'Flutter', 'Riverpod', 'Provider'
+    ],
+    'tools': [
+      'Firebase', 'Git', 'CI/CD', 'REST'
+    ],
+    'concepts': [
+      'Clean Architecture', 'SOLID', 'MVVM', 'Responsive Design'
+    ],
+  };
 }
 ```
 
@@ -249,6 +287,104 @@ class PortfolioApp extends StatelessWidget {
 }
 ```
 
+### widgets/web_layout.dart (nouveau)
+```dart
+import 'package:flutter/material.dart';
+
+class WebNavBar extends StatelessWidget {
+  final String currentRoute;
+  const WebNavBar({super.key, required this.currentRoute});
+  @override
+  Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 768;
+    return Container(
+      height: 70,
+      padding: EdgeInsets.symmetric(horizontal: isMobile ? 20 : 80),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0,2))],
+      ),
+      child: Row(children: [
+        Text('Votre Nom', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        const Spacer(),
+        if (!isMobile) ...[
+          _NavItem(label: 'Accueil', route: '/'),
+          _NavItem(label: 'Projets', route: '/projects'),
+          _NavItem(label: 'À propos', route: '/about'),
+          _NavItem(label: 'Compétences', route: '/skills'),
+          _NavItem(label: 'Contact', route: '/contact'),
+        ],
+        if (isMobile) IconButton(onPressed: () { /* ouvrir menu */ }, icon: const Icon(Icons.menu)),
+      ]),
+    );
+  }
+}
+
+class WebFooter extends StatelessWidget {
+  const WebFooter({super.key});
+  @override
+  Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 768;
+    return Container(
+      color: const Color(0xFFF8FAFC),
+      padding: EdgeInsets.symmetric(vertical: 24, horizontal: isMobile ? 20 : 80),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text('© ${DateTime.now().year} Votre Nom — Tous droits réservés', textAlign: TextAlign.center),
+        ],
+      ),
+    );
+  }
+}
+
+class WebContainer extends StatelessWidget {
+  final Widget child; final double maxWidth;
+  const WebContainer({super.key, required this.child, this.maxWidth = 1200});
+  @override
+  Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 768;
+    return Center(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: maxWidth),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: isMobile ? 20 : 80),
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
+class WebLayout extends StatelessWidget {
+  final String currentRoute; final Widget child;
+  const WebLayout({super.key, required this.currentRoute, required this.child});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        children: [
+          WebNavBar(currentRoute: currentRoute),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(children: [ child, const WebFooter() ]),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NavItem extends StatelessWidget {
+  final String label; final String route; const _NavItem({required this.label, required this.route});
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(onPressed: () => Navigator.pushNamed(context, route), child: Text(label));
+  }
+}
+```
+
 ### ImageGenerator (usage)
 ```dart
 import '../utils/image_generator.dart';
@@ -264,7 +400,11 @@ Widget projectHeader(int index, String title) =>
 - [ ] 10 projets présents, progression visible
 - [ ] Aucun asset image externe
 - [ ] `flutter analyze` OK
-- [ ] UI responsive mobile/web
+- [ ] UI responsive mobile/web (breakpoint 768px)
+- [ ] WebLayout utilisé sur toutes les pages (NavBar + Footer non fixés)
+- [ ] Footer fait partie du flux de scroll (pas de position: fixed)
+- [ ] WebContainer maxWidth 1200, padding horizontal 20/80
+- [ ] Pas d'utilisation de `withOpacity` (utiliser `.withValues(alpha: ...)`)
 
 ---
 
@@ -273,6 +413,13 @@ Widget projectHeader(int index, String title) =>
 1. `flutter pub get`
 2. `flutter run -d chrome` (ou device)
 3. Vérifier navigation, projets, responsive
+
+Astuce de test rapide:
+
+```bash
+flutter analyze
+flutter run -d chrome --web-port=8080
+```
 
 ---
 
